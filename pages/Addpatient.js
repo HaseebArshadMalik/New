@@ -1,174 +1,123 @@
+import Link from "next/link";
+import { useState } from "react";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import * as Yup from "yup";
+import Radio from "@mui/material/Radio";
+import RadioGroup from "@mui/material/RadioGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import FormControl from "@mui/material/FormControl";
+import FormLabel from "@mui/material/FormLabel";
+import { useRouter } from "next/router";
+import React from "react";
 
-import AddPatient from "../components/Addpatient";
- const add=()=>{
-  return(
-    <>
-    <AddPatient/>
-    </>
-  )
-}
-export default add;
-// import Link from "next/link";
-// import { useState } from "react";
-// import * as React from "react";
-// import Radio from "@mui/material/Radio";
-// import RadioGroup from "@mui/material/RadioGroup";
-// import FormControlLabel from "@mui/material/FormControlLabel";
-// import FormControl from "@mui/material/FormControl";
-// import FormLabel from "@mui/material/FormLabel";
-// import { useRouter } from "next/router";
-// const AddPatient = () => {
-//   const [name, setName] = useState("");
-//   const [gender, setGender] = useState("male");
-//   const [email, setEmail] = useState("");
-//   const [password, setPassword] = useState("");
-//   const [phone, setPhone] = useState("");
-//   const [address, setAddress] = useState("");
-//   const router = useRouter();
+const SignupSchema = Yup.object().shape({
+  name: Yup.string().required("Name is required"),
+  gender: Yup.string().required("Gender is required"),
+  email: Yup.string().email("Invalid email").required("Email is required"),
+  // speciality: Yup.string().required("Speciality is required"),
+  password: Yup.string().required("Password is required"),
+  phone: Yup.string().required("Phone number is required"),
+  address: Yup.string().required("Address is required"),
+});
 
-//   const handleSignup = async (e) => {
-//      e.preventDefault();
-//       const res=await fetch('http://localhost/NewProject/api/Doctor/InsertPatient', {
-//       method: 'POST',
-      
-//       headers: {
-//         'Accept': "application/json",
-//         'Content-Type': "application/json"
-//     },
-//       body:JSON.stringify({
-//         "NAME": name,
-//         "GENDER": gender,
-//         "ADDRESS": address,
-//         "EMAIL": email,
-//         "PHONE": phone,
-//         "PASSWORD": password,
-//       }),
-//     }).then(response => response.json())
-//       .then(data => {
-//         M.toast({ html: "Patient added successfully", classes: "green" });
-//       router.push("/Doctorview");
+const AddPatient = () => {
+  const router = useRouter();
 
-//       })
-//       .catch(error => console.error(error))
-    
+  const handleSignup = async (values, { setSubmitting }) => {
+    const res = await fetch(
+      "http://localhost/NewProject/api/Doctor/InsertPatient",
+      {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values),
+      }
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        M.toast({
+          html: "Patient added successfully",
+          classes: "green",
+        });
+        router.push("/Doctorview");
+      })
+      .catch((error) => console.error(error))
+      .finally(() => {
+        setSubmitting(false);
+      });
+  };
 
-     
+  return (
+    <div className="container">
+      <div className="card center-align">
+        <h3>AddPatient</h3>
+        <Formik
+          initialValues={{
+            name: "",
+            gender: "male",
+            email: "",
+            // speciality: "",
+            password: "",
+            phone: "",
+            address: "",
+          }}
+          validationSchema={SignupSchema}
+          onSubmit={handleSignup}
+        >
+          {({ isSubmitting }) => (
+            <Form>
+              <FormControl>
+                <Field type="text" name="name" placeholder="Name" />
+                <ErrorMessage name="name" component="div" />
 
-//       // const response = await fetch(
-//       //   `http://localhost/NewProject/api/Doctor/SignupDoctor`,
-//       //   {
-//       //     mode:"no-cors",
-//       //     method: 'POST',
-//       //     headers: {"Content-Type": "application/json"},
-         
-//       //   },
-       
-        
-//       // );
-  
-//       // if (response.ok) {
-//       //   const data = await response.json();
-//       //   console.log(data);
-//       //   // navigation.navigate('DirDashboard');
-//       // } else {
-//       //  console.log('Invalid Username or password!');
-//       // }
+                <Field type="email" name="email" placeholder="Email" />
+                <ErrorMessage name="email" component="div" />
 
+                <Field type="password" name="password" placeholder="Password" />
+                <ErrorMessage name="password" component="div" />
+                 
+               
+                
+                
+                
+                <FormControl component="fieldset">
+                  <FormLabel component="legend">Gender</FormLabel>
+                  <RadioGroup name="gender">
+                    <FormControlLabel
+                      value="female"
+                      control={<Radio />}
+                      label="Female"
+                    />
+                    <FormControlLabel
+                      value="male"
+                      control={<Radio />}
+                      label="Male"
+                    />
+                  </RadioGroup>
+                  <ErrorMessage name="gender" component="div" />
+                </FormControl>
 
-//     // const requestOption = {
-//     //   method: "POST",
-//     //   mode: "no-cors",
-//     //   headers: {
-//     //     "Content-Type": "application/json; ",
-//     //   },
-      
-//     };
-  
-//     // const res = await fetch(
-//     //   `http://localhost:80/NewProject/api/Doctor/SignupDoctor`,
-//     //   requestOption
-//     // );
+                <Field type="text" name="phone" placeholder="Phone Number" />
+                <ErrorMessage name="phone" component="div" />
 
-    
-  
-//   return (
-//     <div className="container  ">
-//       <div className=" card center-align ">
-//         <h3>AddPatient</h3>
-//         <form onSubmit={(e) => handleSignup(e)}>
-//           <FormControl>
-//             <input
-//               type="text"
-//               placeholder="Name"
-//               value={name}
-//               onChange={(e) => setName(e.target.value)}
-//             />
-//             <input
-//               type="email"
-//               placeholder="Email"
-//               value={email}
-//               onChange={(e) => setEmail(e.target.value)}
-//             />
-//             <input
-//               type="password"
-//               placeholder="Password"
-//               value={password}
-//               onChange={(e) => setPassword(e.target.value)}
-//             />
+                <Field type="text" name="address" placeholder="Address" />
+                <ErrorMessage name="address" component="div" />
 
-//             <FormLabel id="demo-controlled-radio-buttons-group">
-//               Gender
-//             </FormLabel>
-//             <RadioGroup
-//               row
-//               aria-labelledby="demo-controlled-radio-buttons-group"
-//               name="controlled-radio-buttons-group"
-//               value={gender}
-//               onChange={(e) => setGender(e.target.value)}
-//             >
-//               <FormControlLabel
-//                 value="female"
-//                 control={<Radio />}
-//                 label="Female"
-//               />
-//               <FormControlLabel value="male" control={<Radio />} label="Male" />
-//             </RadioGroup>
-
-//             <input
-//               type="text"
-//               placeholder="PhoneNumber"
-//               value={phone}
-//               onChange={(e) => setPhone(e.target.value)}
-//             />
-//             <input
-//               type="text"
-//               placeholder="Address"
-//               value={address}
-//               onChange={(e) => setAddress(e.target.value)}
-//             />
-//             <button
-//               className="btn waves-effect waves-light #1565c0 blue darken-3"
-//               type="submit"
-//             >
-//               AddPatient
-//               <i className="material-icons right"></i>
-//             </button>
-
-//             {/* <button
-//             variant="contained"
-//             color="success"
-//             // className="btn waves-effect waves-light #1565c0 blue darken-4"
-//             type="submit"
-            
-//           >
-//             Signup
-//             <Link href="/">SIGNUP</Link>
-//           </button> */}
-           
-//           </FormControl>
-//         </form>
-//       </div>
-//     </div>
-//   );
-// };
-// export default AddPatient;
+                <button
+                  className="btn waves-effect waves-light blue fw-bold text-white"
+                  type="submit"
+                >
+                  AddPatient
+                  <i className="material-icons right"></i>
+                </button>
+              </FormControl>
+            </Form>
+          )}
+        </Formik>
+      </div>
+    </div>
+  );
+};
+export default AddPatient;

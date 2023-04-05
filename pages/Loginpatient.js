@@ -18,7 +18,7 @@ const Login = () => {
 
   const handlelogin = async (values) => {
     try {
-      const res = await fetch("http://localhost/NewProject/api/Doctor/Login", {
+      const res = await fetch("http://localhost/NewProject/api/Doctor/Loginpatient", {
         method: "POST",
         headers: {
           Accept: "application/json",
@@ -30,7 +30,6 @@ const Login = () => {
         }),
       });
       const res2 = await res.json();
-      localStorage.setItem('docId', res2.DOCID);
       if (res2.error) {
         setError(res2.error);
       } else if (
@@ -39,9 +38,10 @@ const Login = () => {
       ) {
         setError("Invalid email or password.");
       } else {
+        localStorage.setItem('docId', res2.PATID);
         console.log(res2);
         Router.push({
-          pathname: "./Doctorview",
+          pathname: "./Patientview",
         });
       }
     } catch (error) {}
@@ -112,11 +112,7 @@ const Login = () => {
                     Login
                     <i className="material-icons right"></i>
                   </button>
-                  <Link className="mt-3 mb-5" href="/Signup">
-                    <h5>
-                      Don't have a account? <br /> Sign Up
-                    </h5>
-                  </Link>
+                 
                 </FormControl>
               </Form>
             )}

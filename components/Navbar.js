@@ -9,18 +9,9 @@ const Navbar = () => {
   }
   return (
     <nav>
-      <div className="nav-wrapper #1e88e5 blue darken-1">
-        <Link href="/" className="brand-logo">
-          Secure App
-        </Link>
-        <ul id="nav-mobile" className="right ">
-          <li className={isActive("/Login")}>
-            <Link href="/Login">Login</Link>
-          </li>
-          <li className={isActive("/Signup")}>
-            <Link href="/Signup">Signup</Link>
-          </li>
-        </ul>
+      <div className="nav-wrapper #1e88e5 blue darken-1" >
+        
+        <h2 style={{padding:8}}>Secure App</h2>
       </div>
     </nav>
   );

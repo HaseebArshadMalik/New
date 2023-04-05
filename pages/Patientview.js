@@ -10,7 +10,7 @@ import { ListItemButton } from "@mui/material";
 
 export const getStaticProps = async () => {
   const res = await fetch(
-    `http://localhost/NewProject/api/Doctor/GetAllPatients`
+    `http://localhost/NewProject/api/Doctor/GetAllDoctors`
   );
   const data = await res.json();
   return {
@@ -20,16 +20,18 @@ export const getStaticProps = async () => {
   };
 };
 
-const doctorview = ({ data }) => {
-  const id = data.PATID;
+const patientview = ({ data }) => {
+  const id = data.DOCID;
 
-  function sendProps(id, name) {
-    localStorage.setItem('patientId', id);
+  const sendProps=(id, name) =>{
+   
+  
+  localStorage.setItem('patientId', id);
     Router.push({
-      pathname: "./Doctorchat",
+      pathname: "./Patientchat", 
       query: {
-        id,
-        name,
+        "id":id,
+        "name":name, 
       },
     });
   }
@@ -50,7 +52,7 @@ const doctorview = ({ data }) => {
             </Link>
           </div>
           <div className="col-lg-4 text-center">
-            <h3> Doctor View</h3>
+            <h3> PATIENT View</h3>
           </div>
           
           
@@ -78,9 +80,9 @@ const doctorview = ({ data }) => {
             {data.map((curElem) => {
               return (
                 <div
-                  key={curElem.PATID}
+                  key={curElem.DOCID}
                   className="col-lg-4 mb-3"
-                  onClick={() => sendProps(curElem.PATID, curElem.NAME)}
+                  onClick={() => sendProps(curElem.DOCID, curElem.NAME)}
                   style={{ cursor: "pointer" }}
                 >
                   <div className="mt-5 center-align h-100 shadow-lg p-3 bg-white rounded mx-2">
@@ -102,7 +104,7 @@ const doctorview = ({ data }) => {
                     </div>
                     <div>
                       <p>
-                        Patient ID : <span>{curElem.PATID}</span>
+                        DOCTOR ID : <span>{curElem.DOCID}</span>
                       </p>
                       <h4>
                         {" "}
@@ -127,4 +129,4 @@ const doctorview = ({ data }) => {
     </>
   );
 };
-export default doctorview;
+export default patientview;
