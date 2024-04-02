@@ -9,19 +9,25 @@ const AddVital = () => {
   const [tem, settem] = useState("");
   const [bloodPressure, setpressure] = useState("");
   const [heartRate, setrate] = useState("");
+  const [breathRate, setbreath] = useState("");
   const [patId, setid] = useState("");
   const [value, setValue] = useState(dayjs("2022-04-17"));
 
   const router = useRouter();
   const {
-    query: { id },
+    query: { id,dbname },
   } = router;
-  const pro = { id };
+  const pro = { id,dbname };
 
   const handleSignup = async (e) => {
     e.preventDefault();
+    if (!tem || !bloodPressure || !heartRate || !breathRate ) {
+      // Display an error message
+      alert("Please fill in all fields.");
+      return;
+    }
     const res = await fetch(
-      "http://localhost/NewProject/api/Doctor/InsertVital",
+      "http://localhost/NewProject/api/Patient/insertvitals",
       {
         method: "POST",
 
@@ -33,7 +39,9 @@ const AddVital = () => {
           temperature: tem,
           bloodPressure: bloodPressure,
           heartRate: heartRate,
+          breathRate:breathRate,
           patId: pro.id,
+          name:pro.dbname,
         }),
       }
     )
@@ -44,6 +52,7 @@ const AddVital = () => {
           pathname: "./Doctorchat",
           query: {
             id,
+            dbname,
           },
         });
       })
@@ -90,6 +99,12 @@ const AddVital = () => {
                 placeholder="HeartRate"
                 value={heartRate}
                 onChange={(e) => setrate(e.target.value)}
+              />
+              <input
+                type="text"
+                placeholder="BreathRate"
+                value={breathRate}
+                onChange={(e) => setbreath(e.target.value)}
               />
               <button
                 className=" mt-4 text-white fw-bold btn waves-effect waves-light blue"

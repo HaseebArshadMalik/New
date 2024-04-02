@@ -7,21 +7,62 @@ import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
 import Divider from "@mui/material/Divider";
 import { ListItemButton } from "@mui/material";
+import { useState,useEffect } from "react";
+import { useRouter } from "next/router";
 
-export const getStaticProps = async () => {
-  const res = await fetch(
-    `http://localhost/NewProject/api/Doctor/GetAllDoctors`
-  );
-  const data = await res.json();
-  return {
-    props: {
-      data,
-    },
-  };
-};
+// export const getStaticProps = async () => {
+//   const res = await fetch(
+//     `http://localhost/NewProject/api/Doctor/GetAllDoctors`
+//   );
+//   const data = await res.json();
+//   return {
+//     props: {
+//       data,
+//     },
+//   };
+// };
 
 const patientview = ({ data }) => {
-  const id = data.DOCID;
+  // const id = data.DOCID;
+  const [array, setarray] = useState([]);
+  const router = useRouter();
+    const { id, name } = router.query;
+    let patid=id;
+  const getdoctor = async () => {
+
+    const response = await fetch(
+      'http://localhost/NewProject/api/Doctor/getdoctor', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        id:id,
+      }),
+    }
+    );
+    
+    let data = await response.json();
+    
+    
+    if (data) {
+      let arr2=[];
+      for(let i=0;i<data.length;i++){
+      
+       let arr1=data[i].split(',');
+       arr2.push({PATID:arr1[0],PNAME:arr1[1],NAME:arr1[2],DOCID:arr1[3]})
+      }
+      setarray(arr2)
+     for(let i=0;i<array.length;i++){
+      console.log(array[i].ptid);
+     }
+      
+    //navigation.navigate('DoctorsList',{array:arr});
+    } else {
+      //Alert.alert('you do not have Doctors Contact info')
+    } 
+}
 
   const sendProps=(id, name) =>{
    
@@ -32,52 +73,37 @@ const patientview = ({ data }) => {
       query: {
         "id":id,
         "name":name, 
+        dbname:name+id,
+        patid,
       },
     });
   }
-  function AddPatient() {
-    Router.push({
-      pathname: "./Addpatient",
-    });
-  }
+  useEffect(()=>{
+
+    // setpatarr([]);
+     getdoctor();
+    },[id]);
   
-  // console.log(id);
   return (
     <>
       <nav>
         <div className="row align-items-center">
-        <div className="col-lg-4 ">
-          <Link className="my-btn" href="/Login">
+        <div className="col-lg-4 col-sm-4 col-md-4">
+          <Link className="my-btn" href="/Loginpatient">
               Logout
             </Link>
           </div>
-          <div className="col-lg-4 text-center">
-            <h3> PATIENT View</h3>
+          <div className="col-lg-4 col-sm-4 col-md-2 text-center">
+            <h3>Doctor List </h3>
           </div>
           
-          
-          <div className="col-lg-4 text-end px-5">
-            <svg
-              onClick={() => AddPatient()}
-              style={{ cursor: "pointer" }}
-              xmlns="http://www.w3.org/2000/svg"
-              width="30"
-              height="30"
-              fill="currentColor"
-              className="bi bi-plus-circle"
-              viewBox="0 0 16 16"
-            >
-              <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
-              <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
-            </svg>
-          </div>
         </div>
       </nav>
 
       <div>
         <div className="container ">
           <div className="row">
-            {data.map((curElem) => {
+            {array.map((curElem) => {
               return (
                 <div
                   key={curElem.DOCID}

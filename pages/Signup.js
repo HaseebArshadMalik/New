@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import Radio from "@mui/material/Radio";
@@ -11,21 +11,35 @@ import { useRouter } from "next/router";
 import Image from "next/legacy/image";
 
 const SignupSchema = Yup.object().shape({
-  name: Yup.string().required("Name is required"),
+  name: Yup.string().matches(/^[a-zA-Z]+$/, "Name is not valid").required("Name is required"),
   gender: Yup.string().required("Gender is required"),
   email: Yup.string().email("Invalid email").required("Email is required"),
-  speciality: Yup.string().required("Speciality is required"),
+  speciality: Yup.string().matches(/^[a-zA-Z]+$/, "Speciality is not valid").required("Speciality is required"),
   password: Yup.string().required("Password is required"),
-  phone: Yup.string().required("Phone number is required"),
+  phone: Yup.string().matches(/^\d{11}$/, "Phone number is not valid").required("Phone number is required"),
   address: Yup.string().required("Address is required"),
 });
 
 const Signup = () => {
   const router = useRouter();
+  const [uniqueNumber, setUniqueNumber] = useState("");
+  const [flag,setflag]=useState(false);
 
+  const generateUniqueNumber = () => {
+    const num = Math.floor(Math.random() * 1000); // Generate a random number between 0 and 999
+    const formattedNum = num.toString().padStart(3, "0"); // Ensure the number is exactly 3 digits long
+    setUniqueNumber(formattedNum);
+  };
+ 
+  
   const handleSignup = async (values, { setSubmitting }) => {
+
+   
+    values.uniqueNumber = uniqueNumber
+    
     const res = await fetch(
-      "http://localhost/NewProject/api/Doctor/SignupDoctor",
+     
+      "http://localhost/NewProject/api/Doctor/InsertDoctor",
       {
         method: "POST",
         headers: {
@@ -48,7 +62,9 @@ const Signup = () => {
         setSubmitting(false);
       });
   };
-
+  useEffect(() => {
+    generateUniqueNumber();
+  }, []);
   return (
     <div className="container ">
       <Image
@@ -81,6 +97,7 @@ const Signup = () => {
           <h3>Sign Up</h3>
           <Formik
             initialValues={{
+              uniqueNumber: uniqueNumber,
               name: "",
               gender: "male",
               email: "",
@@ -96,53 +113,77 @@ const Signup = () => {
               <Form>
                 <FormControl>
                   <div className="d-flex">
-                  <Field type="text" name="name" placeholder="Name" className="mx-2" />
-                  <ErrorMessage name="name" component="div" />
-
-                  <Field type="email" name="email" placeholder="Email" className="mx-2" />
+                    <input
+                      type="text"
+                      name="uniqueNumber"
+                      value={uniqueNumber}
+                      readOnly
+                    />   
+              
+                    <Field
+                      type="text"
+                      name="name"
+                      placeholder="Name"
+                      className="mx-2"
+                    />
+                    <ErrorMessage name="name" component="div" />
+                  </div>
+                  <Field
+                    type="email"
+                    name="email"
+                    placeholder="Email"
+                    className="mx-2"
+                  />
                   <ErrorMessage name="email" component="div" />
-              </div>
                   <Field
                     type="password"
                     name="password"
                     placeholder="Password"
                   />
                   <ErrorMessage name="password" component="div" />
-                  
-              <div className="d-flex">
-                  <FormControl component="fieldset">
-                    <RadioGroup name="gender">
-                      <FormControlLabel
-                        value="female"
-                        control={<Radio />}
-                        label="Female"
-                      />
-                      <FormControlLabel
-                        value="male"
-                        control={<Radio />}
-                        label="Male"
-                      />
-                    </RadioGroup>
-                    <ErrorMessage name="gender" component="div" />
-                  </FormControl>
-                  </div>
-              <div className="d-flex">
-                  <Field
-                    type="text"
-                    name="speciality"
-                    placeholder="Speciality" className="mx-2"
-                  />
-                  <ErrorMessage name="speciality" component="div" />
 
-                  <Field type="text" name="phone" placeholder="Phone Number" className="mx-2" />
-                  <ErrorMessage name="phone" component="div" />
-              </div>
+                  <div className="d-flex">
+                    <FormControl component="fieldset">
+                      <RadioGroup name="gender">
+                        <FormControlLabel
+                          value="female"
+                          control={<Radio />}
+                          label="Female"
+                        />
+                        <FormControlLabel
+                          value="male"
+                          control={<Radio />}
+                          label="Male"
+                        />
+                      </RadioGroup>
+                      <ErrorMessage name="gender" component="div" />
+                    </FormControl>
+                  </div>
+
+                  <div className="d-flex">
+                    <Field
+                      type="text"
+                      name="speciality"
+                      placeholder="Speciality"
+                      className="mx-2"
+                    />
+                    <ErrorMessage name="speciality" component="div" />
+
+                    <Field
+                      type="text"
+                      name="phone"
+                      placeholder="Phone Number"
+                      className="mx-2"
+                    />
+                    <ErrorMessage name="phone" component="div" />
+                  </div>
                   <Field type="text" name="address" placeholder="Address" />
                   <ErrorMessage name="address" component="div" />
 
                   <button
                     className="btn waves-effect waves-light blue fw-bold text-white"
                     type="submit"
+                   
                   >
                     signup
                     <i className="material-icons right"></i>

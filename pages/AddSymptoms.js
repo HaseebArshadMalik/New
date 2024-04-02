@@ -16,14 +16,19 @@ const AddSymptoms = () => {
 
   const router = useRouter();
   const {
-    query: { id },
+    query: { id,dbname },
   } = router;
-  const pro = { id };
+  const pro = { id,dbname };
 
   const handleSignup = async (e) => {
     e.preventDefault();
+    if (!Disease || !Description || !Procedure  ) {
+      // Display an error message
+      alert("Please fill in all fields.");
+      return;
+    }
     const res = await fetch(
-      "http://localhost/NewProject/api/Doctor/InsertDisease",
+      "http://localhost/NewProject/api/Patient/insertDisease",
       {
         method: "POST",
 
@@ -36,6 +41,7 @@ const AddSymptoms = () => {
           NAME: Disease,
           SYMPTOMS: Description,
           TREATMENT: Procedure,
+          name:pro.dbname,
         }),
       }
     )
@@ -46,6 +52,7 @@ const AddSymptoms = () => {
           pathname: "./Doctorchat",
           query: {
             id,
+            dbname,
           },
         });
       })

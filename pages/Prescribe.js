@@ -9,6 +9,8 @@ const Prescribe = () => {
   const [Morning, setMorning] = useState("0");
   const [Night, setNight] = useState("0");
   const [Medicinename, setMedicinename] = useState("");
+  const [Days, setDays] = useState("");
+  const [Weight, setWeight] = useState("");
   const [Procedure, setproc] = useState("");
   const [patId, setid] = useState("");
   const [Medicine, setMedicine] = useState("");
@@ -20,14 +22,19 @@ const Prescribe = () => {
 
   const router = useRouter();
   const {
-    query: { id },
+    query: { id,dbname },
   } = router;
-  const pro = { id };
+  const pro = { id,dbname };
 
   const handleSignup = async (e) => {
     e.preventDefault();
+    if (!Medicinename || !selectedOption || !Morning || !Evening || !Noon || !Night || !Days || !Weight  ) {
+      // Display an error message
+      alert("Please fill in all fields.");
+      return;
+    }
     const res = await fetch(
-      "http://localhost/NewProject/api/Doctor/InsertMed",
+      "http://localhost/NewProject/api/Patient/insertMedicines",
       {
         method: "POST",
 
@@ -43,6 +50,9 @@ const Prescribe = () => {
           EVE: Evening,
           NIGHT: Night,
           patId: pro.id,
+          Days:Days,
+          WEIGHT:Weight,
+          name:dbname,
         }),
       }
     )
@@ -53,6 +63,7 @@ const Prescribe = () => {
           pathname: "./Doctorchat",
           query: {
             id,
+            dbname,
           },
         });
       })
@@ -204,6 +215,18 @@ const Prescribe = () => {
                   <option value={4}>4</option>
                 </select>
               </div>
+              <input
+                type="text"
+                placeholder="DaysofMedicine"
+                value={Days}
+                onChange={(e) => setDays(e.target.value)}
+              />
+              <input
+                type="text"
+                placeholder="Weight"
+                value={Weight}
+                onChange={(e) => setWeight(e.target.value)}
+              />
             </div>
             <button
               className="btn my-5 waves-effect waves-light blue fw-bold text-white m-2"

@@ -13,12 +13,13 @@ const LoginSchema = Yup.object().shape({
 });
 
 const Login = () => {
+  let arr1=[];
   const [error, setError] = useState("");
   const router = useRouter();
 
   const handlelogin = async (values) => {
     try {
-      const res = await fetch("http://localhost/NewProject/api/Doctor/Loginpatient", {
+      const res = await fetch("http://localhost/NewProject/api/Patient/login", {
         method: "POST",
         headers: {
           Accept: "application/json",
@@ -30,19 +31,26 @@ const Login = () => {
         }),
       });
       const res2 = await res.json();
-      if (res2.error) {
-        setError(res2.error);
-      } else if (
-        res2.EMAIL != values.email &&
-        res2.PASSWORD != values.password
-      ) {
-        setError("Invalid email or password.");
-      } else {
-        localStorage.setItem('docId', res2.PATID);
-        console.log(res2);
+      if (res2 === "Invalid") {
+        alert("Invalid  Email or Password");
+        return;
+      }
+  
+   
+      arr1=res2[0].split(',');
+       
+      if(arr1[2]==values.password){
         Router.push({
-          pathname: "./Patientview",
-        });
+              pathname: "./Patientview",
+              query: {
+                "id":arr1[0],
+                "name":arr1[1],
+              },
+            });
+      }
+      else{
+        // alert(res2);
+        // return;
       }
     } catch (error) {}
   };
@@ -92,7 +100,7 @@ const Login = () => {
                   <Field
                     type="email"
                     name="email"
-                    placeholder="Email"
+                    placeholder="Enter Email"
                     className="mt-3"
                   />
                   <ErrorMessage name="email" component="div" />
